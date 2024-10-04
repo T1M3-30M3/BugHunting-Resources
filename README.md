@@ -1,6 +1,6 @@
 # BugHunting-Resources
 
-#Oneliner:
+#Oneliner:<br><br>
 https://github.com/0xPugal/One-Liners<br>
 https://github.com/bhavesh-pardhi/One-Liner<br>
 https://github.com/T1M3-30M3/awesome-oneliner-bugbounty<br>
@@ -10,7 +10,7 @@ https://github.com/dwisiswant0/awesome-oneliner-bugbounty<br>
 https://github.com/twseptian/oneliner-bugbounty<br>
 https://github.com/thecybertix/One-Liner-Collections<br>
 
-#Bug Hunting Method:
+#Bug Hunting Method:<br><br>
 https://github.com/WadQamar10/My-Hunting-Methodology-/blob/main/My%20Bug%20Hunting%20Methodology.md<br>
 https://github.com/ManasHarsh/Bug-bounty-methodology<br>
 https://github.com/Tikam02/Bug-Bounty-Resources<br>
@@ -18,7 +18,7 @@ https://github.com/m0chan/BugBounty/<br>
 https://github.com/mrvcoder/Bug-Hunting-methodologies<br>
 https://medium.com/@Aacle/list/bugbounty-methodology-checklists-a9631229d796<br>
 
-#Bug Hunting + CTF:
+#Bug Hunting + CTF:<br><br>
 https://github.com/foysalhossain12/awesome-ctf-crypto<br>
 https://github.com/foysalhossain12/awesome-ctf?tab=readme-ov-file#web-1<br>
 https://github.com/foysalhossain12/Burp-Suite<br>
@@ -38,7 +38,7 @@ https://github.com/foysalhossain12/writeups<br>
 https://github.com/foysalhossain12/xxe-injection-payload-list<br>
 https://github.com/cyberteach360/Bug-Bounty-Methodology<br>
 
-#Bug Hunting + CTF + Hacking:
+#Bug Hunting + CTF + Hacking:<br><br>
 
 https://github.com/mrco24/OK-VPS
 https://github.com/mrco24/mrco24-wordlist<br>
