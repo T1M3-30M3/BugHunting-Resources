@@ -80,3 +80,8 @@ https://github.com/thenurhabib/whoisss<br>
 
 https://github.com/lutfumertceylan/top25-parameter<br>
 https://github.com/OWASP/www-project-top-25-parameters<br>
+
+
+Bug Bounty Writeups:<br>
+
+https://github.com/x1337loser/bug-bounty-writeup<br>
